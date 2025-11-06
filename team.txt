@@ -1,0 +1,5 @@
+Step 5 : Merge Conflicts
+  3. Make sure there is a link to the team Trello board in the text file.
+    https://trello.com/invite/b/69064fd5d85b84b023bc0f9c/ATTIaeae5f5d5e07da95b3de3588d822cc243E8F7773/team-11-sleep-outside
+  4. Add your name to the text file.
+      - Ezra Zacarias
