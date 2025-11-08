@@ -1,4 +1,4 @@
-import { setLocalStorage, getLocalStorage } from './utils.mjs';
+import { setLocalStorage } from './utils.mjs';
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -8,43 +8,31 @@ export default class ProductDetails {
   }
 
   async init() {
-    // Get product details from data source
+    // get product details
     this.product = await this.dataSource.findProductById(this.productId);
-    
-    // Render the product on the page
+
+    // render product details
     this.renderProductDetails();
-    
-    // Add click event to Add to Cart button
+
+    // add event listener for cart button
     document.getElementById('addToCart')
-      .addEventListener('click', this.addToCart.bind(this));
+      .addEventListener('click', this.addProductToCart.bind(this));
   }
 
-  addToCart() {
-    let cart = getLocalStorage('so-cart') || [];
-    cart.push(this.product);
-    setLocalStorage('so-cart', cart);
+  addProductToCart() {
+    // save product to localStorage
+    setLocalStorage('so-cart', this.product);
+    alert(`${this.product.Name} added to cart!`);
   }
 
   renderProductDetails() {
-    // Create HTML for product details
-    const productHTML = `
-      <section class="product-detail">
-        <h2>${this.product.Brand.Name}</h2>
-        <h3>${this.product.NameWithoutBrand}</h3>
-        <img src="${this.product.Image}" alt="${this.product.NameWithoutBrand}">
-        <p class="product-card__price">$${this.product.FinalPrice}</p>
-        <p class="product__color">${this.product.Colors[0].ColorName}</p>
-        <p class="product__description">${this.product.DescriptionHtmlSimple}</p>
-        <div class="product-detail__add">
-          <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button>
-        </div>
-      </section>
+    // generate HTML for product details
+    document.querySelector('.product-detail').innerHTML = `
+      <h2>${this.product.Name}</h2>
+      <p>${this.product.Description}</p>
+      <p>Price: $${this.product.Price}</p>
+      <button id="addToCart">Add to Cart</button>
     `;
-    
-    // Insert into page
-    document.querySelector('main').innerHTML = productHTML;
-    
-    // Update page title
-    document.title = `${this.product.Brand.Name} ${this.product.NameWithoutBrand} - Sleep Outside`;
   }
 }
+
