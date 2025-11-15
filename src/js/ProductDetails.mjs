@@ -1,4 +1,4 @@
-import { setLocalStorage } from './utils.mjs';
+import { getLocalStorage, setLocalStorage } from "./utils.mjs";
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -8,31 +8,41 @@ export default class ProductDetails {
   }
 
   async init() {
-    // get product details
     this.product = await this.dataSource.findProductById(this.productId);
-
-    // render product details
     this.renderProductDetails();
-
-    // add event listener for cart button
-    document.getElementById('addToCart')
-      .addEventListener('click', this.addProductToCart.bind(this));
+    document
+      .getElementById("add-to-cart")
+      .addEventListener("click", this.addProductToCart.bind(this));
   }
 
   addProductToCart() {
-    // save product to localStorage
-    setLocalStorage('so-cart', this.product);
-    alert(`${this.product.Name} added to cart!`);
+    const cartItems = getLocalStorage("so-cart") || [];
+    cartItems.push(this.product);
+    setLocalStorage("so-cart", cartItems);
   }
 
   renderProductDetails() {
-    // generate HTML for product details
-    document.querySelector('.product-detail').innerHTML = `
-      <h2>${this.product.Name}</h2>
-      <p>${this.product.Description}</p>
-      <p>Price: $${this.product.Price}</p>
-      <button id="addToCart">Add to Cart</button>
-    `;
+    productDetailsTemplate(this.product);
   }
 }
 
+function productDetailsTemplate(product) {
+  // Update category title
+  document.querySelector("h2").textContent = product.Category ? 
+    product.Category.charAt(0).toUpperCase() + product.Category.slice(1) : 
+    "Product Details";
+  
+  document.querySelector("#p-brand").textContent = product.Brand.Name;
+  document.querySelector("#p-name").textContent = product.NameWithoutBrand;
+
+  const productImage = document.querySelector("#p-image");
+  productImage.src = product.Images.PrimaryLarge;
+  productImage.alt = product.NameWithoutBrand;
+
+  // Update price display
+  document.querySelector("#p-price").textContent = `$${product.FinalPrice}`;
+  
+  document.querySelector("#p-color").textContent = product.Colors[0].ColorName;
+  document.querySelector("#p-description").innerHTML = product.DescriptionHtmlSimple;
+  document.querySelector("#add-to-cart").dataset.id = product.Id;
+}
