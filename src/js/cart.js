@@ -21,7 +21,6 @@ function cartItemTemplate(item) {
   return newItem;
 }
 
-
 renderCartContents();
 
 import { updateCartBadge } from './cartBadge.js';

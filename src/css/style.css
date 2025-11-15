@@ -108,13 +108,11 @@ button {
   border: 0;
   font-size: var(--large-font);
   cursor: pointer;
-
 }
 
 button:hover {
   background-color: var(--tertiary-color);
-}  
-
+}
 
 .divider {
   border-bottom: 2px solid var(--primary-color);
@@ -254,7 +252,7 @@ button:hover {
 
 .cart-count {
   position: absolute;
-  top: -6px; 
+  top: -6px;
   right: -8px;
   background: var(--tertiary-color);
   color: white;
