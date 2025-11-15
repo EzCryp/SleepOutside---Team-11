@@ -99,11 +99,16 @@ p {
   color: var(--tertiary-color);
 }
 
+.title {
+  font-size: 2.2rem;
+  font-variant: small-caps;
+  text-shadow: 0 0 0.5em #777;
+}
+
 button {
   padding: 0.5em 2em;
   background-color: var(--secondary-color);
   color: white;
-  margin: auto;
   display: block;
   border: 0;
   font-size: var(--large-font);
@@ -115,7 +120,7 @@ button:hover {
 }
 
 .divider {
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
 }
 
 /* End utility classes */
@@ -155,16 +160,38 @@ button:hover {
   text-align: center;
 }
 
+/* Product Grid */
+.product-grid {
+  columns: 4;
+  column-gap: 1rem;
+  list-style-type: none;
+  text-align: center;
+}
+
+.product-grid a {
+  text-decoration: none;
+  color: var(--dark-grey);
+  font-size: var(--small-font);
+}
+
+.product-grid img {
+  width: min(100px, 90%);
+}
+
 .products {
   margin-top: 2rem;
   padding: 1rem;
+}
+
+.products h2 {
+  margin-bottom: 1em;
 }
 
 .product-list {
   display: flex;
   flex-flow: row wrap;
   list-style-type: none;
-  justify-content: center;
+  align-items: stretch;
 }
 
 .product-list a {
@@ -174,14 +201,14 @@ button:hover {
 
 /* Styles for product lists */
 .product-card {
-  flex: 1 1 45%;
+  flex: 1 1 100%;
   margin: 0.25em;
-  padding: 0.5em;
+  padding: 1em;
   border: 1px solid var(--light-grey);
   max-width: 250px;
+  text-align: center;
 }
 
-.product-card h2,
 .product-card h3,
 .product-card p {
   margin: 0.5em 0;
@@ -198,13 +225,34 @@ button:hover {
 /* End product list card */
 
 .product-detail {
+  width: max(500px, 90%);
+  margin: 1em auto;
   padding: 1em;
-  max-width: 500px;
-  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  grid-gap: 2em;
+}
+
+.product-detail h2 {
+  grid-column: 1/3;
+  padding: 0.5em;
+  text-align: center;
+  background-color: var(--dark-grey);
+  color: #fff;
 }
 
 .product-detail img {
   width: 100%;
+}
+
+.product-detail h2 {
+  margin-bottom: 0.5em;
+}
+
+#p-price {
+  font-size: 1.5em;
+  color: var(--secondary-color);
 }
 
 /* Start cart list card styles */
@@ -242,6 +290,7 @@ button:hover {
 
 .cart-card__price {
   grid-row: 2;
+
   grid-column: 3;
 }
 
@@ -282,5 +331,125 @@ button:hover {
 
 footer {
   font-size: var(--small-font);
+  border-top: 1px solid var(--tertiary-color);
   padding: 1em;
+}
+.categories {
+  padding: 2rem;
+  text-align: center;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.category-item {
+  text-align: center;
+}
+
+.category-item a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.category-item img {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 0.5rem;
+}
+
+.category-item h3 {
+  margin-top: 0.5rem;
+}
+
+
+
+.categories {
+  padding: 2rem;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.categories h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.category-item {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.category-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.category-item a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.category-item img {
+  width: 100px;  /* Fixed width */
+  height: 100px; /* Fixed height */
+  margin: 0 auto 1rem; /* Center the image */
+  display: block;
+  object-fit: contain; /* Ensure the SVG scales properly */
+  transition: transform 0.3s ease;
+}
+
+.category-item:hover img {
+  transform: scale(1.1); /* Slight zoom on hover */
+}
+
+.category-item h3 {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .categories {
+    padding: 1rem;
+  }
+  
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .category-item img {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .category-item h3 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
 }
