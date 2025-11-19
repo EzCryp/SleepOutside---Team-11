@@ -61,4 +61,16 @@ export async function loadHeaderFooter() {
 
   renderWithTemplate(headerTemplate, headerElement);
   renderWithTemplate(footerTemplate, footerElement);
+  
+  // Update cart count after header is loaded
+  updateCartCount();
+}
+
+export function updateCartCount() {
+  const cartItems = getLocalStorage("so-cart") || [];
+  const cartCountElement = document.querySelector(".cart-count");
+  if (cartCountElement) {
+    cartCountElement.textContent = cartItems.length;
+    cartCountElement.style.display = cartItems.length > 0 ? "inline" : "none";
+  }
 }

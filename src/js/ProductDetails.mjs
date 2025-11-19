@@ -1,4 +1,4 @@
-import { getLocalStorage, setLocalStorage } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, updateCartCount } from "./utils.mjs";
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -19,6 +19,21 @@ export default class ProductDetails {
     const cartItems = getLocalStorage("so-cart") || [];
     cartItems.push(this.product);
     setLocalStorage("so-cart", cartItems);
+    
+    // Update cart count display
+    updateCartCount();
+    
+    // Provide user feedback
+    const button = document.getElementById("add-to-cart");
+    const originalText = button.textContent;
+    button.textContent = "Added to Cart!";
+    button.style.backgroundColor = "#28a745";
+    
+    // Reset button after 2 seconds
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.backgroundColor = "";
+    }, 2000);
   }
 
   renderProductDetails() {

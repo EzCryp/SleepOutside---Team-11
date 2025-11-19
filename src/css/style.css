@@ -136,6 +136,20 @@ button {
   fill: gray;
 }
 
+.cart-count {
+  background-color: #ff4444;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  position: absolute;
+  top: 5px;
+  right: -5px;
+  min-width: 18px;
+  text-align: center;
+  display: none;
+}
+
 /* End cart icon styles */
 
 .mission {
@@ -342,8 +356,6 @@ footer {
   margin-top: 0.5rem;
 }
 
-
-
 .categories {
   padding: 2rem;
   text-align: center;
@@ -385,7 +397,7 @@ footer {
 }
 
 .category-item img {
-  width: 100px;  /* Fixed width */
+  width: 100px; /* Fixed width */
   height: 100px; /* Fixed height */
   margin: 0 auto 1rem; /* Center the image */
   display: block;
@@ -409,17 +421,17 @@ footer {
   .categories {
     padding: 1rem;
   }
-  
+
   .category-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
-  
+
   .category-item img {
     width: 80px;
     height: 80px;
   }
-  
+
   .category-item h3 {
     font-size: 1rem;
   }
