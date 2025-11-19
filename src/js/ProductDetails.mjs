@@ -19,6 +19,17 @@ export default class ProductDetails {
     const cartItems = getLocalStorage("so-cart") || [];
     cartItems.push(this.product);
     setLocalStorage("so-cart", cartItems);
+    
+    // Add visual feedback
+    const addButton = document.getElementById("add-to-cart");
+    const originalText = addButton.textContent;
+    addButton.textContent = "✓ Added to Cart!";
+    addButton.style.backgroundColor = "#28a745";
+    
+    setTimeout(() => {
+      addButton.textContent = originalText;
+      addButton.style.backgroundColor = "";
+    }, 2000);
   }
 
   renderProductDetails() {

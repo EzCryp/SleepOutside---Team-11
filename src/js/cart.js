@@ -1,4 +1,4 @@
-import { getLocalStorage, loadHeaderFooter } from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, loadHeaderFooter } from "./utils.mjs";
 
 loadHeaderFooter();
 
@@ -18,6 +18,33 @@ function renderCartContents() {
   const total = cartItems.reduce((sum, item) => sum + item.FinalPrice, 0);
   document.querySelector(".list-total").textContent = `$${total.toFixed(2)}`;
   document.querySelector(".list-footer").classList.remove("hide");
+  
+  // Add event listeners to remove buttons
+  addRemoveListeners();
+}
+
+function removeItemFromCart(productId) {
+  let cartItems = getLocalStorage("so-cart") || [];
+  
+  // Remove the first occurrence of the item with matching ID
+  const itemIndex = cartItems.findIndex(item => item.Id === productId);
+  if (itemIndex > -1) {
+    cartItems.splice(itemIndex, 1);
+    setLocalStorage("so-cart", cartItems);
+    // Re-render the cart to show updated content
+    renderCartContents();
+  }
+}
+
+function addRemoveListeners() {
+  const removeButtons = document.querySelectorAll(".cart-card__remove");
+  removeButtons.forEach(button => {
+    button.addEventListener("click", function(event) {
+      event.preventDefault();
+      const productId = this.dataset.id;
+      removeItemFromCart(productId);
+    });
+  });
 }
 
 function cartItemTemplate(item) {
@@ -34,6 +61,7 @@ function cartItemTemplate(item) {
   <p class="cart-card__color">${item.Colors[0].ColorName}</p>
   <p class="cart-card__quantity">qty: 1</p>
   <p class="cart-card__price">$${item.FinalPrice}</p>
+  <button class="cart-card__remove" data-id="${item.Id}">✕ Remove</button>
 </li>`;
 
   return newItem;
