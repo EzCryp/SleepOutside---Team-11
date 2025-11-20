@@ -1,0 +1,11 @@
+# Netlify redirects file
+# Handle SPA routing - serve index.html for all routes that don't match files
+
+# Specific routes for our pages
+/cart/* /cart/index.html 200
+/checkout/* /checkout/index.html 200
+/product_pages/* /product_pages/index.html 200
+/product_listing/* /product_listing/index.html 200
+
+# Fallback - serve main index.html for any unmatched routes
+/* /index.html 200
