@@ -39,9 +39,14 @@ export default class ProductList {
 
   async init() {
     try {
+      // Show loading indicator
+      this.listElement.innerHTML = "<li class='loading'><p>Loading products...</p></li>";
+      
       const params = new URLSearchParams(window.location.search);
       const searchTerm = params.get("search");
       let list = [];
+
+      console.log('ProductList init - Category:', this.category, 'Search:', searchTerm);
 
       if (searchTerm) {
         // If search param is present, search using the API
@@ -60,10 +65,26 @@ export default class ProductList {
         document.querySelector(".title").textContent = formattedCategory;
       }
 
+      console.log('API response:', list ? list.length : 0, 'products');
+
+      if (!list || list.length === 0) {
+        console.log('No products found, trying fallback...');
+        // Try fallback to local JSON
+        try {
+          const response = await fetch(`./json/${this.category}.json`);
+          if (response.ok) {
+            list = await response.json();
+            console.log('Fallback JSON loaded:', list.length, 'products');
+          }
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError);
+        }
+      }
+
       this.products = list || [];
 
       if (!list || list.length === 0) {
-        this.listElement.innerHTML = "<li class='no-products'><p>No products found for this category.</p></li>";
+        this.listElement.innerHTML = "<li class='no-products'><p>No products found for this category. Please try again later.</p></li>";
       } else {
         this.renderList(list);
       }

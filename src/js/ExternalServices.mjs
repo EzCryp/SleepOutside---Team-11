@@ -28,16 +28,46 @@ export default class ExternalServices {
     console.log(`Fetching data for category: ${category}`);
     console.log(`API URL: ${baseURL}products/search/${category}`);
     
-    const response = await fetch(`${baseURL}products/search/${category}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+      const response = await fetch(`${baseURL}products/search/${category}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await convertToJson(response);
+      console.log('API Response:', data);
+      
+      if (data.Result && data.Result.length > 0) {
+        return data.Result;
+      } else {
+        console.warn('API returned no results, trying fallback...');
+        return await this.getDataFromLocal(category);
+      }
+    } catch (error) {
+      console.error('API request failed:', error);
+      console.log('Trying local JSON fallback...');
+      return await this.getDataFromLocal(category);
     }
-    
-    const data = await convertToJson(response);
-    console.log('API Response:', data);
-    
-    return data.Result || [];
+  }
+
+  async getDataFromLocal(category) {
+    try {
+      const jsonFile = `/json/${category}.json`;
+      console.log(`Loading local file: ${jsonFile}`);
+      const response = await fetch(jsonFile);
+      
+      if (!response.ok) {
+        throw new Error(`Local file not found: ${response.status}`);
+      }
+      
+      const products = await response.json();
+      console.log(`Loaded ${products.length} products from local file`);
+      return products;
+    } catch (error) {
+      console.error('Local file loading failed:', error);
+      return [];
+    }
   }
   async findProductById(id) {
     try {
@@ -73,7 +103,7 @@ export default class ExternalServices {
   async findProductByIdLocal(id) {
     try {
       // Try different JSON files since we have multiple categories
-      const jsonFiles = ['./public/json/tents.json', './public/json/backpacks.json', './public/json/sleeping-bags.json'];
+      const jsonFiles = ['./json/tents.json', './json/backpacks.json', './json/sleeping-bags.json'];
       
       console.log(`Looking for product ${id} in local JSON files...`);
       

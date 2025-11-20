@@ -26,7 +26,10 @@ async function loadFeaturedProducts() {
     console.error('Error loading featured products:', error);
     // Fallback to local JSON if API fails
     try {
-      const response = await fetch('./public/json/tents.json');
+      const response = await fetch('./json/tents.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const products = await response.json();
       
       const featuredProductIds = ['880RR', '985RF', '985PR', '344YJ'];
