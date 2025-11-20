@@ -1,7 +1,10 @@
-const baseURL = import.meta.env.VITE_SERVER_URL;
+const baseURL = import.meta.env.VITE_SERVER_URL || "https://wdd330-backend.onrender.com/";
 
-if (!baseURL) {
-  console.error("❌ VITE_SERVER_URL is not defined!");
+console.log('Base URL from environment:', baseURL);
+
+if (!import.meta.env.VITE_SERVER_URL) {
+  console.warn("⚠️ VITE_SERVER_URL is not defined! Using fallback URL:", baseURL);
+  console.error("Environment variables:", import.meta.env);
 }
 
 async function convertToJson(res) {
@@ -17,12 +20,24 @@ export default class ExternalServices {
     // this.category = category;
     // this.path = `../public/json/${this.category}.json`;
   }
-  async getData(category = null) {  
-
-    const response = await fetch(`${baseURL}products/search/${category}`);
-    const data = await convertToJson(response);
+  async getData(category = null) {
+    if (!category) {
+      throw new Error('Category is required');
+    }
     
-    return data.Result;
+    console.log(`Fetching data for category: ${category}`);
+    console.log(`API URL: ${baseURL}products/search/${category}`);
+    
+    const response = await fetch(`${baseURL}products/search/${category}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await convertToJson(response);
+    console.log('API Response:', data);
+    
+    return data.Result || [];
   }
   async findProductById(id) {
     const response = await fetch(`${baseURL}product/${id}`);

@@ -51,6 +51,7 @@ export default class ProductList {
         list = this.searchProducts(allData, searchTerm);
       } else {
         // Default category-based product list
+        console.log('Loading category:', this.category);
         list = await this.dataSource.getData(this.category);
         const formattedCategory = this.category
           .split('-')
@@ -59,10 +60,10 @@ export default class ProductList {
         document.querySelector(".title").textContent = formattedCategory;
       }
 
-      this.products = list;
+      this.products = list || [];
 
-      if (list.length === 0) {
-        this.listElement.innerHTML = "<li class='no-products'><p>No products found.</p></li>";
+      if (!list || list.length === 0) {
+        this.listElement.innerHTML = "<li class='no-products'><p>No products found for this category.</p></li>";
       } else {
         this.renderList(list);
       }
@@ -71,7 +72,9 @@ export default class ProductList {
       this.setupSortingControls();
     } catch (error) {
       console.error('Error loading products:', error);
-      this.listElement.innerHTML = "<li class='error'><p>Error loading products. Please try again later.</p></li>";
+      console.error('Category:', this.category);
+      console.error('DataSource:', this.dataSource);
+      this.listElement.innerHTML = "<li class='error'><p>Unable to load products. The category might not exist or the API is unavailable.</p></li>";
     }
   }
 

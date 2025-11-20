@@ -299,6 +299,53 @@ button {
   margin-bottom: 0.5em;
 }
 
+/* Product detail pricing styles */
+.price-container {
+  text-align: left;
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 0.5em;
+}
+
+.current-price {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.original-price {
+  font-size: 1.2em;
+  text-decoration: line-through;
+  color: var(--light-grey);
+}
+
+.discount-info {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+.discount-badge {
+  background-color: var(--tertiary-color);
+  color: white;
+  padding: 0.3em 0.8em;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.savings-text {
+  color: var(--tertiary-color);
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
 #p-price {
   font-size: 1.5em;
   color: var(--secondary-color);
