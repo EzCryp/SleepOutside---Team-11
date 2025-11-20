@@ -113,4 +113,30 @@ export default class ExternalServices {
     return data.Result;
   }
 
+  async checkout(order) {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(order)
+    };
+    
+    try {
+      console.log('Submitting order to API:', order);
+      const response = await fetch(`${baseURL}checkout`, options);
+      
+      if (!response.ok) {
+        throw new Error(`Checkout failed: ${response.status} ${response.statusText}`);
+      }
+      
+      const result = await convertToJson(response);
+      console.log('Order submitted successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      throw error;
+    }
+  }
+
 }

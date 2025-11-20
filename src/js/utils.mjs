@@ -62,3 +62,84 @@ export async function loadHeaderFooter() {
   renderWithTemplate(headerTemplate, headerElement);
   renderWithTemplate(footerTemplate, footerElement);
 }
+
+export function formDataToJSON(formElement) {
+  const formData = new FormData(formElement),
+    convertedJSON = {};
+
+  formData.forEach(function (value, key) {
+    convertedJSON[key] = value;
+  });
+
+  return convertedJSON;
+}
+
+// Validation functions
+export function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+export function validateCardNumber(cardNumber) {
+  // Remove spaces and check if it's 16 digits
+  const cleaned = cardNumber.replace(/\s/g, '');
+  return /^\d{16}$/.test(cleaned);
+}
+
+export function validateExpiration(exp) {
+  // Format: MM/YY or MM/YYYY
+  const expRegex = /^(0[1-9]|1[0-2])\/(\d{2}|\d{4})$/;
+  if (!expRegex.test(exp)) return false;
+  
+  const [month, year] = exp.split('/');
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+  
+  const expYear = year.length === 2 ? parseInt('20' + year) : parseInt(year);
+  const expMonth = parseInt(month);
+  
+  if (expYear > currentYear) return true;
+  if (expYear === currentYear && expMonth >= currentMonth) return true;
+  
+  return false;
+}
+
+export function validateCVV(cvv) {
+  return /^\d{3,4}$/.test(cvv);
+}
+
+export function validateZip(zip) {
+  // US zip code format: 5 digits or 5+4 format
+  return /^\d{5}(-\d{4})?$/.test(zip);
+}
+
+export function showError(element, message) {
+  // Remove existing error styling
+  element.classList.remove('error');
+  
+  // Find existing error message
+  const existingError = element.parentNode.querySelector('.error-message');
+  if (existingError) {
+    existingError.remove();
+  }
+  
+  if (message) {
+    // Add error styling
+    element.classList.add('error');
+    
+    // Create and show error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    element.parentNode.appendChild(errorDiv);
+  }
+}
+
+export function clearErrors(form) {
+  const errorElements = form.querySelectorAll('.error');
+  const errorMessages = form.querySelectorAll('.error-message');
+  
+  errorElements.forEach(el => el.classList.remove('error'));
+  errorMessages.forEach(el => el.remove());
+}
