@@ -3,30 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sleep Outside | Product Details</title>
-    <link rel="stylesheet" href="../css/style.css" />
-    <script src="../js/product.js" type="module"></script>
+    <title>Sleep Outside | Product Detail</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="/js/product.js" type="module"></script>
   </head>
 
   <body>
+    <!-- Header placeholder -->
     <header class="divider" id="main-header"></header>
+
     <main class="divider">
       <section class="product-detail">
-        <h2>Product Details</h2>
-        <figure>
-          <img src="" alt="" id="p-image" width="300" />
-        </figure>
-        <section id="product-info">
-          <h3 id="p-brand"></h3>
-          <p id="p-name"></p>
+        <!-- Product image -->
+        <div class="product-image">
+          <img
+            src="/images/camping-products.jpg"
+            alt="Sleep Outside Camping Products"
+            id="productImage"
+            class="divider"
+          />
+        </div>
 
-          <p id="p-color"></p>
-          <p id="p-description"></p>
-          <p id="p-price"></p>
-          <button id="add-to-cart" data-id="">Add to Cart</button>
-        </section>
+        <!-- Product info -->
+        <div class="product-info">
+          <h2 id="productBrand">Brand Name</h2>
+          <h3 id="productName" class="divider">Product Name</h3>
+          <p id="productPrice" class="product-card__price">$0.00</p>
+          <p id="productColor" class="product__color">Color</p>
+          <p id="productDesc" class="product__description">Description</p>
+          <div class="product-detail__add">
+            <button id="addToCart" data-id="">Add to Cart</button>
+          </div>
+        </div>
       </section>
     </main>
-    <footer id="main-footer"></footer>
+
+    <!-- Footer placeholder -->
+    <footer class="divider" id="main-footer"></footer>
   </body>
 </html>
