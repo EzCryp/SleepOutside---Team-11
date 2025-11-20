@@ -1,11 +1,12 @@
 import { getLocalStorage } from "./utils.mjs";
 
 export function updateCartCount() {
-  const cartItems = getLocalStorage("so-cart") || [];
+  const cartItems = getLocalStorage("so-cart");
   const cartCount = document.getElementById("cart-count");
 
-  const count = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
-  console.log("Cart count updated:", count);
+  // Ensure we have an array and count its length
+  const count = Array.isArray(cartItems) ? cartItems.length : 0;
+  console.log("Cart count updated:", count, "items:", cartItems);
 
   if (cartCount) {
     if (count > 0) {

@@ -19,7 +19,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderCartContents() {
-  const cartItems = getLocalStorage("so-cart") || [];
+  let cartItems = getLocalStorage("so-cart");
+  
+  // Ensure we have an array
+  if (!Array.isArray(cartItems)) {
+    cartItems = [];
+  }
+  
+  console.log('Rendering cart with items:', cartItems);
   
   if (cartItems.length === 0) {
     document.querySelector(".product-list").innerHTML = "<li>Your cart is empty</li>";
@@ -30,11 +37,10 @@ function renderCartContents() {
   const htmlItems = cartItems.map((item) => cartItemTemplate(item));
   document.querySelector(".product-list").innerHTML = htmlItems.join("");
   
-  // Calculate and display total (considering quantities)
+  // Calculate and display total (simple sum of FinalPrice for each item)
   const total = cartItems.reduce((sum, item) => {
-    const quantity = item.quantity || 1;
     const price = item.FinalPrice || 0;
-    return sum + (price * quantity);
+    return sum + price;
   }, 0);
   document.querySelector(".list-total").textContent = `$${total.toFixed(2)}`;
   document.querySelector(".list-footer").classList.remove("hide");
@@ -77,22 +83,19 @@ function addRemoveListeners() {
 }
 
 function cartItemTemplate(item) {
-  const quantity = item.quantity || 1;
-  const itemTotal = (item.FinalPrice * quantity).toFixed(2);
-  
+  // Simple template without quantity for W01 basic functionality
   const newItem = `<li class="cart-card divider">
   <a href="#" class="cart-card__image">
     <img
-      src="${item.Images.PrimaryMedium}"
-      alt="${item.Name}"
+      src="${item.Images?.PrimaryMedium || ''}"
+      alt="${item.Name || ''}"
     />
   </a>
   <a href="../product_pages/index.html?product=${item.Id}">
-    <h2 class="card__name">${item.Name}</h2>
+    <h2 class="card__name">${item.Name || ''}</h2>
   </a>
-  <p class="cart-card__color">${item.Colors[0].ColorName}</p>
-  <p class="cart-card__quantity">qty: ${quantity}</p>
-  <p class="cart-card__price">$${itemTotal}</p>
+  <p class="cart-card__color">${item.Colors?.[0]?.ColorName || ''}</p>
+  <p class="cart-card__price">$${item.FinalPrice || 0}</p>
   <button class="cart-card__remove" data-id="${item.Id}">✕ Remove</button>
 </li>`;
 

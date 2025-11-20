@@ -50,40 +50,49 @@ export default class ProductDetails {
     }
   }
 
-  async addProductToCart() {
-    const cartItems = getLocalStorage("so-cart") || [];
+  addProductToCart() {
+    console.log('Adding product to cart:', this.product);
     
-    // Check if product already exists in cart
-    const existingItemIndex = cartItems.findIndex(item => item.Id === this.product.Id);
+    // Get existing cart items as array (not single item)
+    let cartItems = getLocalStorage("so-cart");
     
-    if (existingItemIndex !== -1) {
-      // If product exists, increase quantity (if quantity property exists) or show message
-      if (cartItems[existingItemIndex].quantity) {
-        cartItems[existingItemIndex].quantity += 1;
-      } else {
-        cartItems[existingItemIndex].quantity = 2;
-      }
-    } else {
-      // If product doesn't exist, add it with quantity 1
-      const productToAdd = { ...this.product, quantity: 1 };
-      cartItems.push(productToAdd);
+    // Initialize as empty array if null/undefined
+    if (!cartItems || !Array.isArray(cartItems)) {
+      cartItems = [];
     }
     
+    console.log('Current cart items:', cartItems);
+    
+    // Add the product to the array (don't replace the whole array)
+    cartItems.push(this.product);
+    
+    console.log('Updated cart items:', cartItems);
+    
+    // Save the array back to localStorage
     setLocalStorage("so-cart", cartItems);
     
     // Update cart count badge
     try {
-      const { updateCartCount } = await import('./CartCount.mjs');
-      updateCartCount();
+      import('./CartCount.mjs').then(({ updateCartCount }) => {
+        updateCartCount();
+      });
     } catch (error) {
       console.log('Could not update cart count:', error);
     }
     
     // Add visual feedback
     const addButton = document.getElementById("add-to-cart");
-    const originalText = addButton.textContent;
-    addButton.textContent = "✓ Added to Cart!";
-    addButton.style.backgroundColor = "#28a745";
+    if (addButton) {
+      const originalText = addButton.textContent;
+      addButton.textContent = "✓ Added to Cart!";
+      addButton.style.backgroundColor = "#28a745";
+      
+      setTimeout(() => {
+        addButton.textContent = originalText;
+        addButton.style.backgroundColor = "";
+      }, 2000);
+    }
+  }
     
     setTimeout(() => {
       addButton.textContent = originalText;
