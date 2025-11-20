@@ -50,7 +50,7 @@ export default class ProductDetails {
     }
   }
 
-  addProductToCart() {
+  async addProductToCart() {
     const cartItems = getLocalStorage("so-cart") || [];
     
     // Check if product already exists in cart
@@ -70,6 +70,14 @@ export default class ProductDetails {
     }
     
     setLocalStorage("so-cart", cartItems);
+    
+    // Update cart count badge
+    try {
+      const { updateCartCount } = await import('./CartCount.mjs');
+      updateCartCount();
+    } catch (error) {
+      console.log('Could not update cart count:', error);
+    }
     
     // Add visual feedback
     const addButton = document.getElementById("add-to-cart");

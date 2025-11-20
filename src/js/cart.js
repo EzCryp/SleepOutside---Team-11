@@ -1,9 +1,21 @@
 import { getLocalStorage, setLocalStorage, loadHeaderFooter } from "./utils.mjs";
 
+// Prevent duplicate initialization
+let cartInitialized = false;
+
 // Initialize page when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
-  await loadHeaderFooter();
-  renderCartContents();
+  if (cartInitialized) return;
+  cartInitialized = true;
+  
+  try {
+    console.log('Initializing cart page...');
+    await loadHeaderFooter();
+    renderCartContents();
+    console.log('Cart page initialized successfully');
+  } catch (error) {
+    console.error('Error during cart initialization:', error);
+  }
 });
 
 function renderCartContents() {
@@ -31,7 +43,7 @@ function renderCartContents() {
   addRemoveListeners();
 }
 
-function removeItemFromCart(productId) {
+async function removeItemFromCart(productId) {
   let cartItems = getLocalStorage("so-cart") || [];
   
   // Remove the first occurrence of the item with matching ID
@@ -39,6 +51,15 @@ function removeItemFromCart(productId) {
   if (itemIndex > -1) {
     cartItems.splice(itemIndex, 1);
     setLocalStorage("so-cart", cartItems);
+    
+    // Update cart count badge
+    try {
+      const { updateCartCount } = await import('./CartCount.mjs');
+      updateCartCount();
+    } catch (error) {
+      console.log('Could not update cart count:', error);
+    }
+    
     // Re-render the cart to show updated content
     renderCartContents();
   }

@@ -1,25 +1,32 @@
 import { loadHeaderFooter, validateEmail, validateCardNumber, validateExpiration, validateCVV, validateZip, showError, clearErrors } from "./utils.mjs";
 import CheckoutProcess from "./CheckoutProcess.mjs";
 
-// Load header and footer
-loadHeaderFooter();
+let checkoutInitialized = false;
 
-const checkout = new CheckoutProcess("so-cart", ".checkout-summary");
-
-// Initialize checkout process
-document.addEventListener('DOMContentLoaded', function() {
-  checkout.init();
+// Initialize checkout when DOM is ready
+document.addEventListener('DOMContentLoaded', async function() {
+  if (checkoutInitialized) return;
+  checkoutInitialized = true;
   
-  // Set up form validation and submission
-  const form = document.forms["checkout"];
-  const submitButton = document.querySelector("#checkoutSubmit");
-  
-  if (form && submitButton) {
-    // Add input event listeners for real-time validation
-    addInputValidation(form);
+  try {
+    await loadHeaderFooter();
     
-    // Handle form submission
-    form.addEventListener("submit", handleFormSubmit);
+    const checkout = new CheckoutProcess("so-cart", ".checkout-summary");
+    checkout.init();
+    
+    // Set up form validation and submission
+    const form = document.forms["checkout"];
+    const submitButton = document.querySelector("#checkoutSubmit");
+  
+    if (form && submitButton) {
+      // Add input event listeners for real-time validation
+      addInputValidation(form);
+      
+      // Handle form submission
+      form.addEventListener("submit", handleFormSubmit);
+    }
+  } catch (error) {
+    console.error('Error initializing checkout:', error);
   }
 });
 

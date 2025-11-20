@@ -53,12 +53,23 @@ async function loadTemplate(path) {
 }
 
 let headerFooterLoaded = false;
+let loadingPromise = null;
 
 export async function loadHeaderFooter() {
   if (headerFooterLoaded) return;
-  headerFooterLoaded = true;
+  if (loadingPromise) return loadingPromise;
   
+  loadingPromise = loadHeaderFooterInternal();
   try {
+    await loadingPromise;
+  } finally {
+    loadingPromise = null;
+  }
+}
+
+async function loadHeaderFooterInternal() {
+  try {
+    console.log('Loading header and footer...');
     const headerTemplate = await loadTemplate("./partials/header.html");
     const footerTemplate = await loadTemplate("./partials/footer.html");
 
@@ -66,14 +77,26 @@ export async function loadHeaderFooter() {
     const footerElement = document.querySelector("#main-footer");
 
     if (headerElement && headerTemplate) {
-      renderWithTemplate(headerTemplate, headerElement);
+      if (headerElement.innerHTML.trim() === '') {
+        renderWithTemplate(headerTemplate, headerElement);
+        
+        // Initialize cart count and search functionality after header loads
+        const { updateCartCount, initSearchForm } = await import('./CartCount.mjs');
+        updateCartCount();
+        initSearchForm();
+      }
     }
     if (footerElement && footerTemplate) {
-      renderWithTemplate(footerTemplate, footerElement);
+      if (footerElement.innerHTML.trim() === '') {
+        renderWithTemplate(footerTemplate, footerElement);
+      }
     }
+    
+    headerFooterLoaded = true;
+    console.log('Header and footer loaded successfully');
   } catch (error) {
     console.error('Error loading header/footer:', error);
-    headerFooterLoaded = false; // Reset on error so we can try again
+    // Don't set headerFooterLoaded = true on error, so we can retry
   }
 }
 

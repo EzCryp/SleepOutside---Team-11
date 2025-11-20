@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   isLoaded = true;
   
   try {
+    console.log('Initializing homepage...');
     await loadHeaderFooter();
     await loadFeaturedProducts();
+    console.log('Homepage initialized successfully');
   } catch (error) {
-    console.error('Error during page initialization:', error);
+    console.error('Error during homepage initialization:', error);
   }
 });
 

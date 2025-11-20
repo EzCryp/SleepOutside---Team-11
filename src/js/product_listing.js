@@ -2,26 +2,45 @@ import { loadHeaderFooter, getParam } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 import ProductList from "./ProductList.mjs";
 
+let listingInitialized = false;
+
 document.addEventListener("DOMContentLoaded", async () => {
-  // Load header and footer first, then initialize the page
-  await loadHeaderFooter();
+  if (listingInitialized) return;
+  listingInitialized = true;
   
-  // Get the category from the URL parameter
-  const category = getParam("category") || "tents";
-  
-  // Select the list element (guaranteed to exist after DOM is loaded)
-  const listElement = document.querySelector(".product-list");
-  
-  // Check if list element exists
-  if (!listElement) {
-    console.error("Product list element not found");
-    return;
+  try {
+    // Load header and footer first, then initialize the page
+    await loadHeaderFooter();
+    
+    // Get the category and search query from URL parameters
+    const category = getParam("category") || "tents";
+    const searchQuery = getParam("search");
+    
+    // Select the list element (guaranteed to exist after DOM is loaded)
+    const listElement = document.querySelector(".product-list");
+    
+    // Check if list element exists
+    if (!listElement) {
+      console.error("Product list element not found");
+      return;
+    }
+    
+    // Create data source using API services
+    const dataSource = new ExternalServices();
+    
+    // Create and initialize product list with search query if provided
+    const productList = new ProductList(category, dataSource, listElement);
+    await productList.init(searchQuery);
+    
+    // Update page title if searching
+    if (searchQuery) {
+      const titleElement = document.querySelector("h2");
+      if (titleElement) {
+        titleElement.textContent = `Search Results for "${searchQuery}"`;
+      }
+    }
+    
+  } catch (error) {
+    console.error('Error initializing product listing:', error);
   }
-  
-  // Create data source using API services
-  const dataSource = new ExternalServices();
-  
-  // Create and initialize product list
-  const productList = new ProductList(category, dataSource, listElement);
-  await productList.init();
 });

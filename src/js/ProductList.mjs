@@ -37,13 +37,13 @@ export default class ProductList {
     this.products = [];
   }
 
-  async init() {
+  async init(searchQuery = null) {
     try {
       // Show loading indicator
       this.listElement.innerHTML = "<li class='loading'><p>Loading products...</p></li>";
       
       const params = new URLSearchParams(window.location.search);
-      const searchTerm = params.get("search");
+      const searchTerm = searchQuery || params.get("search");
       let list = [];
 
       console.log('ProductList init - Category:', this.category, 'Search:', searchTerm);
