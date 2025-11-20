@@ -26,7 +26,7 @@ async function loadFeaturedProducts() {
     console.error('Error loading featured products:', error);
     // Fallback to local JSON if API fails
     try {
-      const response = await fetch('/json/tents.json');
+      const response = await fetch('./public/json/tents.json');
       const products = await response.json();
       
       const featuredProductIds = ['880RR', '985RF', '985PR', '344YJ'];
@@ -48,7 +48,7 @@ async function loadFeaturedProducts() {
 function productCardTemplate(product) {
   return `
     <li class="product-card">
-      <a href="/product_pages/index.html?product=${product.Id}">
+      <a href="./product_pages/index.html?product=${product.Id}">
         <img src="${product.Images?.PrimaryMedium || product.Image}" alt="${product.NameWithoutBrand}">
         <h3 class="card__brand">${product.Brand?.Name || product.Brand}</h3>
         <h2 class="card__name">${product.NameWithoutBrand}</h2>

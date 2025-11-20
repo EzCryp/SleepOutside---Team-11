@@ -73,7 +73,7 @@ export default class ExternalServices {
   async findProductByIdLocal(id) {
     try {
       // Try different JSON files since we have multiple categories
-      const jsonFiles = ['/public/json/tents.json', '/public/json/backpacks.json', '/public/json/sleeping-bags.json'];
+      const jsonFiles = ['./public/json/tents.json', './public/json/backpacks.json', './public/json/sleeping-bags.json'];
       
       console.log(`Looking for product ${id} in local JSON files...`);
       
