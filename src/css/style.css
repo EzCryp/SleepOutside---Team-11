@@ -218,6 +218,59 @@ button {
   font-size: 1em;
 }
 
+/* Product card image wrapper for discount badges */
+.product-card__image-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* Discount badge styling */
+.discount-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: var(--tertiary-color);
+  color: white;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+  z-index: 1;
+}
+
+/* Original price styling */
+.original-price {
+  text-decoration: line-through;
+  color: var(--light-grey);
+  font-size: 0.9em;
+  margin-left: 0.5em;
+}
+
+/* Sort container styling */
+.sort-container {
+  margin-bottom: 1em;
+  text-align: right;
+}
+
+.sort-container label {
+  margin-right: 0.5em;
+  font-weight: bold;
+}
+
+.sort-container select {
+  padding: 0.3em;
+  border: 1px solid var(--light-grey);
+  border-radius: 4px;
+}
+
+/* No products and error states */
+.no-products, .error {
+  text-align: center;
+  padding: 2em;
+  color: var(--light-grey);
+}
+
 /* End product list card */
 
 .product-detail {
