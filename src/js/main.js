@@ -4,14 +4,30 @@ import ExternalServices from "./ExternalServices.mjs";
 // Ensure we only load once
 let isLoaded = false;
 
-loadHeaderFooter();
-
-// Load and display featured products on homepage
-async function loadFeaturedProducts() {
-  if (isLoaded) return; // Prevent duplicate loading
+// Load header and footer first, then load products
+document.addEventListener('DOMContentLoaded', async () => {
+  if (isLoaded) return;
   isLoaded = true;
   
   try {
+    await loadHeaderFooter();
+    await loadFeaturedProducts();
+  } catch (error) {
+    console.error('Error during page initialization:', error);
+  }
+});
+
+// Load and display featured products on homepage
+async function loadFeaturedProducts() {
+  try {
+    // Clear any existing content first
+    const productListElement = document.querySelector(".product-list");
+    if (!productListElement) {
+      console.error('Product list element not found');
+      return;
+    }
+    
+    productListElement.innerHTML = '';
     // Use the API instead of local JSON files
     const dataSource = new ExternalServices();
     const products = await dataSource.getData('tents');
@@ -73,6 +89,3 @@ function renderFeaturedProducts(products) {
     renderListWithTemplate(productCardTemplate, productList, products, "afterbegin", true);
   }
 }
-
-// Load featured products when page loads
-loadFeaturedProducts();

@@ -52,15 +52,29 @@ async function loadTemplate(path) {
   return template;
 }
 
+let headerFooterLoaded = false;
+
 export async function loadHeaderFooter() {
-  const headerTemplate = await loadTemplate("./partials/header.html");
-  const footerTemplate = await loadTemplate("./partials/footer.html");
+  if (headerFooterLoaded) return;
+  headerFooterLoaded = true;
+  
+  try {
+    const headerTemplate = await loadTemplate("./partials/header.html");
+    const footerTemplate = await loadTemplate("./partials/footer.html");
 
-  const headerElement = document.querySelector("#main-header");
-  const footerElement = document.querySelector("#main-footer");
+    const headerElement = document.querySelector("#main-header");
+    const footerElement = document.querySelector("#main-footer");
 
-  renderWithTemplate(headerTemplate, headerElement);
-  renderWithTemplate(footerTemplate, footerElement);
+    if (headerElement && headerTemplate) {
+      renderWithTemplate(headerTemplate, headerElement);
+    }
+    if (footerElement && footerTemplate) {
+      renderWithTemplate(footerTemplate, footerElement);
+    }
+  } catch (error) {
+    console.error('Error loading header/footer:', error);
+    headerFooterLoaded = false; // Reset on error so we can try again
+  }
 }
 
 export function formDataToJSON(formElement) {
