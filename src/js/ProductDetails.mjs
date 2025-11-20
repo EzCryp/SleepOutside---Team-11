@@ -93,12 +93,6 @@ export default class ProductDetails {
       }, 2000);
     }
   }
-    
-    setTimeout(() => {
-      addButton.textContent = originalText;
-      addButton.style.backgroundColor = "";
-    }, 2000);
-  }
 
   renderProductDetails() {
     productDetailsTemplate(this.product);
