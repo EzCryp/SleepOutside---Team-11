@@ -40,10 +40,71 @@ export default class ExternalServices {
     return data.Result || [];
   }
   async findProductById(id) {
-    const response = await fetch(`${baseURL}product/${id}`);
-    const data = await convertToJson(response);
-    // console.log(data.Result);
-    return data.Result;
+    try {
+      console.log(`🔍 Looking for product with ID: ${id}`);
+      console.log(`Making API call to: ${baseURL}product/${id}`);
+      const response = await fetch(`${baseURL}product/${id}`);
+      console.log('API Response status:', response.status);
+      
+      if (response.ok) {
+        const data = await convertToJson(response);
+        console.log('✅ API Response data:', data);
+        if (data.Result) {
+          return data.Result;
+        }
+      }
+      
+      console.warn(`⚠️ API request failed: ${response.status} ${response.statusText}. Trying fallback...`);
+      // Try fallback to local JSON if API fails
+      return await this.findProductByIdLocal(id);
+      
+    } catch (error) {
+      console.error('❌ Error in findProductById:', error);
+      console.log('🔄 Trying local fallback...');
+      try {
+        return await this.findProductByIdLocal(id);
+      } catch (fallbackError) {
+        console.error('❌ Local fallback also failed:', fallbackError);
+        throw new Error(`Both API and local data failed: ${error.message}`);
+      }
+    }
+  }
+
+  async findProductByIdLocal(id) {
+    try {
+      // Try different JSON files since we have multiple categories
+      const jsonFiles = ['/public/json/tents.json', '/public/json/backpacks.json', '/public/json/sleeping-bags.json'];
+      
+      console.log(`Looking for product ${id} in local JSON files...`);
+      
+      for (const jsonFile of jsonFiles) {
+        try {
+          console.log(`Trying to load: ${jsonFile}`);
+          const response = await fetch(jsonFile);
+          console.log(`Response for ${jsonFile}:`, response.status, response.ok);
+          
+          if (response.ok) {
+            const products = await response.json();
+            console.log(`Found ${products.length} products in ${jsonFile}`);
+            const product = products.find(p => p.Id === id || p.id === id);
+            if (product) {
+              console.log(`✅ Found product ${id} in ${jsonFile}:`, product);
+              return product;
+            } else {
+              console.log(`❌ Product ${id} not found in ${jsonFile}`);
+            }
+          }
+        } catch (fileError) {
+          console.error(`❌ Could not load ${jsonFile}:`, fileError.message);
+          continue;
+        }
+      }
+      
+      throw new Error(`Product with ID ${id} not found in any local JSON files`);
+    } catch (error) {
+      console.error('Error in findProductByIdLocal:', error);
+      throw error;
+    }
   }
 
   async searchProducts(query) {

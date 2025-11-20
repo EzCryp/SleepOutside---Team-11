@@ -25,10 +25,16 @@ export default class ProductDetails {
   async init() {
     try {
       console.log('Fetching product with ID:', this.productId);
+      
+      if (!this.productId) {
+        throw new Error('No product ID provided');
+      }
+      
       this.product = await this.dataSource.findProductById(this.productId);
       console.log('Product data received:', this.product);
       
       if (!this.product || !this.product.Id) {
+        console.error('Product not found or invalid data:', this.product);
         throw new Error('Product not found');
       }
       
@@ -37,14 +43,32 @@ export default class ProductDetails {
         .getElementById("add-to-cart")
         .addEventListener("click", this.addProductToCart.bind(this));
     } catch (error) {
-      console.error('Error loading product:', error);
-      this.renderError();
+      console.error('Error in init:', error);
+      console.error('Product ID was:', this.productId);
+      console.error('DataSource:', this.dataSource);
+      this.renderError(error.message);
     }
   }
 
   addProductToCart() {
     const cartItems = getLocalStorage("so-cart") || [];
-    cartItems.push(this.product);
+    
+    // Check if product already exists in cart
+    const existingItemIndex = cartItems.findIndex(item => item.Id === this.product.Id);
+    
+    if (existingItemIndex !== -1) {
+      // If product exists, increase quantity (if quantity property exists) or show message
+      if (cartItems[existingItemIndex].quantity) {
+        cartItems[existingItemIndex].quantity += 1;
+      } else {
+        cartItems[existingItemIndex].quantity = 2;
+      }
+    } else {
+      // If product doesn't exist, add it with quantity 1
+      const productToAdd = { ...this.product, quantity: 1 };
+      cartItems.push(productToAdd);
+    }
+    
     setLocalStorage("so-cart", cartItems);
     
     // Add visual feedback
@@ -63,11 +87,14 @@ export default class ProductDetails {
     productDetailsTemplate(this.product);
   }
 
-  renderError() {
+  renderError(errorMessage = 'Unknown error') {
     document.querySelector("h2").textContent = "Product Not Found";
     document.querySelector("#product-info").innerHTML = `
       <p>Sorry, we couldn't find the product you're looking for.</p>
+      <p><strong>Error details:</strong> ${errorMessage}</p>
+      <p>Product ID: ${this.productId || 'Not provided'}</p>
       <p><a href="/">Return to homepage</a></p>
+      <p><a href="/product_listing/index.html?category=tents">Browse tents</a></p>
     `;
   }
 }
