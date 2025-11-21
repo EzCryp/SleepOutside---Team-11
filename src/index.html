@@ -6,6 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Home</title>
     <link rel="stylesheet" href="./css/style.css" />
+    <script>
+      // Early dedupe: remove duplicate top-level sections and observe for changes.
+      (function(){
+        function removeDups() {
+          try {
+            ['.hero', '.categories', '.products', 'header#main-header', 'footer#main-footer'].forEach(sel => {
+              const nodes = document.querySelectorAll(sel);
+              if (nodes.length > 1) {
+                Array.from(nodes).slice(1).forEach(n=>n.remove());
+                console.warn('Early dedupe removed duplicates for', sel);
+              }
+            });
+          } catch(e) { console.error('removeDups err', e); }
+        }
+        removeDups();
+        try {
+          const obs = new MutationObserver(() => removeDups());
+          obs.observe(document.documentElement || document.body, { childList:true, subtree:true });
+          window.__dedupeObserver = obs;
+        } catch(e){}
+      })();
+    </script>
     <script src="./js/main.js" type="module"></script>
   </head>
 

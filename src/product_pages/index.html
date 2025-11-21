@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Product Details</title>
     <link rel="stylesheet" href="../css/style.css" />
+    <script>
+      (function(){
+        function removeDups(){
+          try{['.hero','.categories','.products','header#main-header','footer#main-footer'].forEach(sel=>{const n=document.querySelectorAll(sel);if(n.length>1){Array.from(n).slice(1).forEach(x=>x.remove());}})}catch(e){}
+        }
+        removeDups();
+        try{new MutationObserver(()=>removeDups()).observe(document.documentElement||document.body,{childList:true,subtree:true});}catch(e){}
+      })();
+    </script>
     <script src="../js/product.js" type="module"></script>
   </head>
 
