@@ -4,8 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Cart</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <script src="/js/cart.js" type="module"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script>
+      (function(){
+        function removeDups(){
+          try{['.hero','.categories','.products','header#main-header','footer#main-footer'].forEach(sel=>{const n=document.querySelectorAll(sel);if(n.length>1){Array.from(n).slice(1).forEach(x=>x.remove());}})}catch(e){}
+        }
+        removeDups();
+        try{new MutationObserver(()=>removeDups()).observe(document.documentElement||document.body,{childList:true,subtree:true});}catch(e){}
+      })();
+    </script>
+    <script src="../js/cart.js" type="module"></script>
   </head>
 
   <body>
@@ -17,8 +26,11 @@
         <h2>My Cart</h2>
         <!-- Cart items will be injected here -->
         <ul class="product-list"></ul>
-        <!-- Cart total -->
-        <p class="list-total">$0.00</p>
+        <div class="list-footer hide">
+          <button id="goToCheckout">Checkout</button>
+          <span>Total:</span>
+          <span class="list-total">Total: </span>
+        </div>
       </section>
     </main>
 

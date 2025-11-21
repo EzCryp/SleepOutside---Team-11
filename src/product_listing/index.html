@@ -3,16 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sleep Outside | Product Listing</title>
-    <link rel="stylesheet" href="/css/style.css" />
-    <script src="/js/product-listing.js" type="module"></script>
+    <title>Sleep Outside | Products</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script>
+      (function(){
+        function removeDups(){
+          try{['.hero','.categories','.products','header#main-header','footer#main-footer'].forEach(sel=>{const n=document.querySelectorAll(sel);if(n.length>1){Array.from(n).slice(1).forEach(x=>x.remove());}})}catch(e){}
+        }
+        removeDups();
+        try{new MutationObserver(()=>removeDups()).observe(document.documentElement||document.body,{childList:true,subtree:true});}catch(e){}
+      })();
+    </script>
+    <script src="../js/product_listing.js" type="module"></script>
   </head>
   <body>
     <header class="divider" id="main-header"></header>
 
     <main class="divider">
-      <h2 class="title">Top Products</h2>
-      <ul class="product-list"></ul>
+      <section class="products">
+        <h2>Top Products: <span class="title highlight"></span></h2>
+        <div class="sort-container">
+          <label for="sort">Sort by:</label>
+          <select id="sort">
+            <option value="default">Default</option>
+            <option value="name">Name (A–Z)</option>
+            <option value="price">Price (Low–High)</option>
+          </select>
+        </div>
+        <ul class="product-list"></ul>
+      </section>
     </main>
 
     <footer class="divider" id="main-footer"></footer>

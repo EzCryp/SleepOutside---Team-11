@@ -5,7 +5,6 @@
     <!-- Updated today to match reference design - Nov 21, 2025 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Home</title>
-    <link rel="stylesheet" href="./css/style.css" />
     <script>
       // Early dedupe: remove duplicate top-level sections and observe for changes.
       (function(){
@@ -28,13 +27,15 @@
         } catch(e){}
       })();
     </script>
-    <script src="./js/main.js" type="module"></script>
+    <script type="module" crossorigin src="/assets/main-BE_E6_fW.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/utils-DLzXlQ_Y.js">
+    <link rel="modulepreload" crossorigin href="/assets/ExternalServices-Dl2tV_Is.js">
+    <link rel="stylesheet" crossorigin href="/assets/utils-D8VjVFpa.css">
   </head>
 
   <body>
     <header class="divider" id="main-header"></header>
     <main class="divider">
-      <!-- Hero section -->
       <div class="hero">
         <img
           src="./images/banner-sm.jpg"
@@ -57,25 +58,25 @@
         <h2>Shop by Category</h2>
         <div class="category-grid">
           <div class="category-item">
-            <a href="./product_listing/index.html?category=tents">
+            <a href='/product_listing/?category=tents'>
               <img src="./images/tents.png" alt="Tents" style="width: 100px; height: 100px; display: block; margin: 0 auto;">
               <h3>Tents</h3>
             </a>
           </div>
           <div class="category-item">
-            <a href="./product_listing/index.html?category=backpacks">
+            <a href='/product_listing/?category=backpacks'>
               <img src="./images/backpacks.png" alt="Backpacks" style="width: 100px; height: 100px; display: block; margin: 0 auto;">
               <h3>Backpacks</h3>
             </a>
           </div>
           <div class="category-item">
-            <a href="./product_listing/index.html?category=sleeping-bags">
+            <a href='/product_listing/?category=sleeping-bags'>
               <img src="./images/sleepingbags.png" alt="Sleeping Bags" style="width: 100px; height: 100px; display: block; margin: 0 auto;">
               <h3>Sleeping Bags</h3>
             </a>
           </div>
           <div class="category-item">
-            <a href="./product_listing/index.html?category=hammocks">
+            <a href='/product_listing/?category=hammocks'>
               <img src="./images/hammocks.png" alt="Hammocks" style="width: 100px; height: 100px; display: block; margin: 0 auto;">
               <h3>Hammocks</h3>
             </a>
@@ -90,13 +91,10 @@
           <!-- Products will be dynamically loaded here -->
         </ul>
       </section>
-
-      <!-- Top products -->
-      <section class="products">
-        <h2>Top Products</h2>
-        <ul class="product-list"></ul>
-      </section>
     </main>
     <footer id="main-footer"></footer>
-  </body>
+  <div data-netlify-deploy-id="69206f283ad2e10008180109" data-netlify-site-id="0b705e9c-0398-44b5-8e23-4e29d1aff0a5" data-vcs="github" style="position:fixed">
+  
+  <script async src="/.netlify/scripts/cdp"></script>
+</div></body>
 </html>

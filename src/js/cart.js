@@ -1,18 +1,33 @@
-import {
-  loadHeaderFooter,
-  updateCartBadge,
-  getLocalStorage,
-  setLocalStorage,
-} from "./utils.mjs";
+import { getLocalStorage, setLocalStorage, loadHeaderFooter } from "./utils.mjs";
 
-await loadHeaderFooter();
-updateCartBadge();
+// Prevent duplicate initialization
+let cartInitialized = false;
+
+// Initialize page when DOM is loaded
+document.addEventListener('DOMContentLoaded', async () => {
+  if (cartInitialized) return;
+  cartInitialized = true;
+  
+  try {
+    console.log('Initializing cart page...');
+    await loadHeaderFooter();
+    renderCartContents();
+    console.log('Cart page initialized successfully');
+  } catch (error) {
+    console.error('Error during cart initialization:', error);
+  }
+});
 
 function renderCartContents() {
-  const cartItems = getLocalStorage("so-cart") || [];
-  const productList = document.querySelector(".product-list");
-  const totalElement = document.querySelector(".list-total");
-
+  let cartItems = getLocalStorage("so-cart");
+  
+  // Ensure we have an array
+  if (!Array.isArray(cartItems)) {
+    cartItems = [];
+  }
+  
+  console.log('Rendering cart with items:', cartItems);
+  
   if (cartItems.length === 0) {
     productList.innerHTML = "<li>Your cart is empty</li>";
     if (totalElement) {
@@ -23,43 +38,78 @@ function renderCartContents() {
   }
 
   const htmlItems = cartItems.map((item) => cartItemTemplate(item));
-  productList.innerHTML = htmlItems.join("");
-
-  const total = cartItems.reduce(
-    (sum, item) =>
-      sum + (item.FinalPrice || item.ListPrice || 0) * (item.quantity || 1),
-    0,
-  );
-
-  if (totalElement) {
-    totalElement.textContent = `Total: $${total.toFixed(2)}`;
+  document.querySelector(".product-list").innerHTML = htmlItems.join("");
+  
+  // Calculate and display total (simple sum of FinalPrice for each item)
+  const total = cartItems.reduce((sum, item) => {
+    const price = item.FinalPrice || 0;
+    return sum + price;
+  }, 0);
+  document.querySelector(".list-total").textContent = `$${total.toFixed(2)}`;
+  document.querySelector(".list-footer").classList.remove("hide");
+  // Wire checkout button (navigate to checkout form)
+  const checkoutBtn = document.querySelector('#goToCheckout');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      // Navigate to the checkout page
+      window.location.href = "../checkout/";
+    });
   }
+  
+  // Add event listeners to remove buttons
+  addRemoveListeners();
+}
 
-  updateCartBadge();
-  attachCartListeners();
+async function removeItemFromCart(productId) {
+  let cartItems = getLocalStorage("so-cart") || [];
+  
+  // Remove the first occurrence of the item with matching ID
+  const itemIndex = cartItems.findIndex(item => item.Id === productId);
+  if (itemIndex > -1) {
+    cartItems.splice(itemIndex, 1);
+    setLocalStorage("so-cart", cartItems);
+    
+    // Update cart count badge
+    try {
+      const { updateCartCount } = await import('./CartCount.mjs');
+      updateCartCount();
+    } catch (error) {
+      console.log('Could not update cart count:', error);
+    }
+    
+    // Re-render the cart to show updated content
+    renderCartContents();
+  }
+}
+
+function addRemoveListeners() {
+  const removeButtons = document.querySelectorAll(".cart-card__remove");
+  removeButtons.forEach(button => {
+    button.addEventListener("click", function(event) {
+      event.preventDefault();
+      const productId = this.dataset.id;
+      removeItemFromCart(productId);
+    });
+  });
 }
 
 function cartItemTemplate(item) {
-  return `
-    <li class="cart-card divider">
-      <span class="remove-item" data-id="${item.Id}">✖</span>
-      <a href="/product_pages/index.html?product=${item.Id}" class="cart-card__image">
-        <img src="${item.Images?.PrimarySmall || item.Images?.PrimaryMedium}" 
-        alt="${item.NameWithoutBrand}">
-      </a>
-      <a href="/product_pages/index.html?product=${item.Id}">
-        <h2 class="card__name">${item.Name}</h2>
-      </a>
-      <p class="cart-card__color">${item.Colors?.[0]?.ColorName || "N/A"}</p>
-      <div class="cart-card__quantity">
-        <button class="decrement" data-id="${item.Id}">–</button>
-        <span>qty: ${item.quantity || 1}</span>
-        <button class="increment" data-id="${item.Id}">+</button>
-      </div>
-      <p class="cart-card__price">$${item.FinalPrice || item.ListPrice || item.SuggestedRetailPrice}</p>
-    </li>
-  `;
-}
+  // Simple template without quantity for W01 basic functionality
+  const newItem = `<li class="cart-card divider">
+  <a href="#" class="cart-card__image">
+    <img
+      src="${item.Images?.PrimaryMedium || ''}"
+      alt="${item.Name || ''}"
+    />
+  </a>
+  <a href="../product_pages/index.html?product=${item.Id}">
+    <h2 class="card__name">${item.Name || ''}</h2>
+  </a>
+  <p class="cart-card__color">${item.Colors?.[0]?.ColorName || ''}</p>
+  <p class="cart-card__price">$${item.FinalPrice || 0}</p>
+  <button class="cart-card__remove" data-id="${item.Id}">✕ Remove</button>
+</li>`;
 
 function attachCartListeners() {
   document.querySelectorAll(".remove-item").forEach((btn) => {
@@ -97,5 +147,3 @@ function changeQuantity(id, delta) {
   renderCartContents();
   updateCartBadge();
 }
-
-renderCartContents();
