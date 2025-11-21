@@ -1,23 +1,24 @@
 import { loadHeaderFooter, renderListWithTemplate } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 
-// Ensure we only load once
-let isLoaded = false;
-
-// Load header and footer first, then load products
-document.addEventListener('DOMContentLoaded', async () => {
-  if (isLoaded) return;
-  isLoaded = true;
+// Prevent multiple initializations with a global flag
+if (window.homepageInitialized) {
+  console.log('Homepage already initialized, skipping...');
+} else {
+  window.homepageInitialized = true;
   
-  try {
-    console.log('Initializing homepage...');
-    await loadHeaderFooter();
-    await loadFeaturedProducts();
-    console.log('Homepage initialized successfully');
-  } catch (error) {
-    console.error('Error during homepage initialization:', error);
-  }
-});
+  // Load header and footer first, then load products
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      console.log('Initializing homepage...');
+      await loadHeaderFooter();
+      await loadFeaturedProducts();
+      console.log('Homepage initialized successfully');
+    } catch (error) {
+      console.error('Error during homepage initialization:', error);
+    }
+  });
+}
 
 // Load and display featured products on homepage
 async function loadFeaturedProducts() {

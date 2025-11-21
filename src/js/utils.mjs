@@ -52,18 +52,31 @@ async function loadTemplate(path) {
   return template;
 }
 
-let headerFooterLoaded = false;
-let loadingPromise = null;
+// Global flag to prevent duplicate header/footer loading
+if (typeof window !== 'undefined') {
+  window.headerFooterLoadingState = window.headerFooterLoadingState || 'unloaded';
+}
 
 export async function loadHeaderFooter() {
-  if (headerFooterLoaded) return;
-  if (loadingPromise) return loadingPromise;
+  if (typeof window !== 'undefined' && window.headerFooterLoadingState !== 'unloaded') {
+    console.log('Header/footer already loaded or loading, skipping...');
+    return;
+  }
   
-  loadingPromise = loadHeaderFooterInternal();
+  if (typeof window !== 'undefined') {
+    window.headerFooterLoadingState = 'loading';
+  }
+  
   try {
-    await loadingPromise;
-  } finally {
-    loadingPromise = null;
+    await loadHeaderFooterInternal();
+    if (typeof window !== 'undefined') {
+      window.headerFooterLoadingState = 'loaded';
+    }
+  } catch (error) {
+    if (typeof window !== 'undefined') {
+      window.headerFooterLoadingState = 'unloaded'; // Reset on error
+    }
+    throw error;
   }
 }
 
