@@ -1,52 +1,64 @@
 import { loadHeaderFooter, renderListWithTemplate } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 
-// Prevent multiple initializations with a global flag
-if (window.homepageInitialized) {
-  console.log('Homepage already initialized, skipping...');
-} else {
-  window.homepageInitialized = true;
+// Simple, one-time initialization
+document.addEventListener('DOMContentLoaded', initHomepage);
+
+async function initHomepage() {
+  // Prevent multiple calls
+  if (document.body.classList.contains('homepage-loaded')) {
+    return;
+  }
+  document.body.classList.add('homepage-loaded');
   
-  // Load header and footer first, then load products
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
-      console.log('Initializing homepage...');
-      await loadHeaderFooter();
-      await loadFeaturedProducts();
-      console.log('Homepage initialized successfully');
-    } catch (error) {
-      console.error('Error during homepage initialization:', error);
-    }
-  });
+  try {
+    console.log('Initializing homepage...');
+    await loadHeaderFooter();
+    await loadFeaturedProducts();
+    console.log('Homepage initialized successfully');
+  } catch (error) {
+    console.error('Error during homepage initialization:', error);
+    document.body.classList.remove('homepage-loaded'); // Reset on error
+  }
 }
 
 // Load and display featured products on homepage
 async function loadFeaturedProducts() {
+  // Prevent multiple calls to this function
+  if (loadFeaturedProducts.hasRun) {
+    console.log('Featured products already loaded, skipping...');
+    return;
+  }
+  loadFeaturedProducts.hasRun = true;
+  
   try {
-    // Clear any existing content first
+    // Clear any existing content first and verify element exists
     const productListElement = document.querySelector(".product-list");
     if (!productListElement) {
       console.error('Product list element not found');
       return;
     }
     
+    // Completely clear the container
     productListElement.innerHTML = '';
-    // Try API first, fall back to local JSON
+    
+    // Try local JSON first for reliability
     let products;
     try {
-      const dataSource = new ExternalServices();
-      products = await dataSource.getData('tents');
-    } catch (error) {
-      console.warn('API failed, using local JSON:', error);
-      // Direct fallback to local JSON
       const response = await fetch('./json/tents.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       products = await response.json();
+      console.log('Loaded products from local JSON:', products.length);
+    } catch (error) {
+      console.warn('Local JSON failed, trying API...', error);
+      // Fallback to API
+      const dataSource = new ExternalServices();
+      products = await dataSource.getData('tents');
     }
     
-    // Filter to only show products we have detail pages for - matching reference design
+    // Filter to only show featured products
     const featuredProductIds = ['985PR', '880RT', '880RR', '344YJ'];
     const featuredProducts = products.filter(product => 
       featuredProductIds.includes(product.Id)
@@ -57,10 +69,11 @@ async function loadFeaturedProducts() {
       featuredProducts.find(product => product.Id === id)
     ).filter(product => product !== undefined);
     
+    console.log('Rendering featured products:', sortedProducts.length);
     renderFeaturedProducts(sortedProducts);
   } catch (error) {
     console.error('Error loading featured products:', error);
-    // Show error message to user
+    loadFeaturedProducts.hasRun = false; // Reset on error
     const productList = document.querySelector('.product-list');
     if (productList) {
       productList.innerHTML = '<li>Error loading products. Please try again later.</li>';
