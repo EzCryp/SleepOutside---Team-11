@@ -68,6 +68,11 @@ export async function loadHeaderFooter() {
   }
   
   try {
+    // Defensive: remove any duplicate top-level sections that preview tooling
+    // or injected scripts may have produced before we try to load templates.
+    if (typeof document !== 'undefined' && typeof removeDuplicateElements === 'function') {
+      removeDuplicateElements(['main', 'header#main-header', 'footer#main-footer', '.hero', '.categories', '.products']);
+    }
     await loadHeaderFooterInternal();
     if (typeof window !== 'undefined') {
       window.headerFooterLoadingState = 'loaded';
@@ -115,7 +120,6 @@ async function loadHeaderFooterInternal() {
       }
     }
     
-    headerFooterLoaded = true;
     console.log('Header and footer loaded successfully');
   } catch (error) {
     console.error('Error loading header/footer:', error);
@@ -224,4 +228,21 @@ export function alertMessage(message, scroll = true, type = 'error') {
     alert.scrollIntoView({ behavior: 'smooth' });
   }
   return alert;
+}
+
+// Remove duplicate elements for given selectors, keeping the first occurrence only.
+export function removeDuplicateElements(selectors = []) {
+  if (typeof document === 'undefined') return;
+  try {
+    selectors.forEach(selector => {
+      const nodes = Array.from(document.querySelectorAll(selector));
+      if (nodes.length > 1) {
+        console.warn(`removeDuplicateElements: found ${nodes.length} '${selector}' elements — removing duplicates.`);
+        // Keep the first occurrence, remove the rest
+        nodes.slice(1).forEach(n => n.remove());
+      }
+    });
+  } catch (err) {
+    console.error('removeDuplicateElements error:', err);
+  }
 }

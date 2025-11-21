@@ -14,6 +14,9 @@ async function initHomepage() {
   try {
     console.log('Initializing homepage...');
     await loadHeaderFooter();
+      // Defensive: if the page was duplicated in the DOM (preview frames, injected scripts),
+      // remove duplicate main sections and keep the first occurrence to avoid visual repeats.
+      removeDuplicateSections(['.hero', '.categories', '.products']);
     await loadFeaturedProducts();
     console.log('Homepage initialized successfully');
   } catch (error) {
@@ -98,5 +101,21 @@ function renderFeaturedProducts(products) {
   const productList = document.querySelector('.product-list');
   if (productList) {
     renderListWithTemplate(productCardTemplate, productList, products, "afterbegin", true);
+  }
+}
+
+// Remove duplicate elements for the selectors provided, keeping the first occurrence only.
+function removeDuplicateSections(selectors = []) {
+  try {
+    selectors.forEach(selector => {
+      const nodes = Array.from(document.querySelectorAll(selector));
+      if (nodes.length > 1) {
+        console.warn(`Found ${nodes.length} '${selector}' elements — removing duplicates.`);
+        // keep the first, remove the rest
+        nodes.slice(1).forEach(n => n.remove());
+      }
+    });
+  } catch (err) {
+    console.error('Error removing duplicate sections:', err);
   }
 }
