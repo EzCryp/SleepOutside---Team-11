@@ -1,7 +1,9 @@
-import { loadHeaderFooter, validateEmail, validateCardNumber, validateExpiration, validateCVV, validateZip, showError, clearErrors } from "./utils.mjs";
+import { loadHeaderFooter, validateEmail, validateCardNumber, validateExpiration, validateCVV, validateZip, showError, clearErrors, alertMessage } from "./utils.mjs";
 import CheckoutProcess from "./CheckoutProcess.mjs";
 
 let checkoutInitialized = false;
+// Expose checkout to functions outside DOMContentLoaded (submission handler)
+let checkout = null;
 
 // Initialize checkout when DOM is ready
 document.addEventListener('DOMContentLoaded', async function() {
@@ -11,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   try {
     await loadHeaderFooter();
     
-    const checkout = new CheckoutProcess("so-cart", ".checkout-summary");
+    checkout = new CheckoutProcess("so-cart", ".checkout-summary");
     checkout.init();
     
     // Set up form validation and submission
@@ -151,12 +153,18 @@ async function handleFormSubmit(event) {
   const form = event.target;
   const submitButton = document.querySelector("#checkoutSubmit");
   
-  // Clear any previous messages
+  // Clear any previous inline messages
   clearMessage();
-  
-  // Validate form
+
+  // Use browser HTML5 validation first (since we call preventDefault())
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  // Validate form with additional checks
   if (!validateForm(form)) {
-    showMessage("Please correct the errors below before submitting.", "error");
+    alertMessage("Please correct the errors below before submitting.", true, 'error');
     return;
   }
   
@@ -174,11 +182,11 @@ async function handleFormSubmit(event) {
     const result = await checkout.checkout(form);
     
     if (result.success) {
-      showMessage("Order placed successfully! Thank you for your purchase. Your cart has been cleared.", "success");
-      form.reset();
-      checkout.init(); // Refresh the order summary
+      // Navigate to success page after clearing cart (CheckoutProcess already clears it)
+      window.location.href = "success.html";
     } else {
-      showMessage(`Order failed: ${result.error}`, "error");
+      // Show a dismissible alert with server-provided details
+      alertMessage(`Order failed: ${result.error}`, true, 'error');
     }
   } catch (error) {
     console.error("Checkout error:", error);

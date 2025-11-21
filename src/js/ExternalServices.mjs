@@ -8,11 +8,22 @@ if (!import.meta.env.VITE_SERVER_URL) {
 }
 
 async function convertToJson(res) {
-  if (res.ok) {
-    return res.json();
-  } else {
-    throw new Error("Bad Response");
+  // Always attempt to parse the response body as JSON first so we
+  // can include any server-provided error details in thrown errors.
+  let jsonResponse = null;
+  try {
+    jsonResponse = await res.json();
+  } catch (err) {
+    // If parsing fails, keep jsonResponse as null
+    jsonResponse = null;
   }
+
+  if (res.ok) {
+    return jsonResponse;
+  }
+
+  // Throw a structured error so callers can inspect details.
+  throw { name: 'servicesError', message: jsonResponse || { status: res.status, statusText: res.statusText } };
 }
 
 export default class ExternalServices {

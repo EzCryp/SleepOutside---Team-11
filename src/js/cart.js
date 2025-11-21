@@ -44,6 +44,15 @@ function renderCartContents() {
   }, 0);
   document.querySelector(".list-total").textContent = `$${total.toFixed(2)}`;
   document.querySelector(".list-footer").classList.remove("hide");
+  // Wire checkout button (navigate to checkout form)
+  const checkoutBtn = document.querySelector('#goToCheckout');
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      // Navigate to the checkout page
+      window.location.href = "../checkout/";
+    });
+  }
   
   // Add event listeners to remove buttons
   addRemoveListeners();

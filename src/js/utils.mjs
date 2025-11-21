@@ -203,3 +203,25 @@ export function clearErrors(form) {
   errorElements.forEach(el => el.classList.remove('error'));
   errorMessages.forEach(el => el.remove());
 }
+
+// General alert message insertion at top of main element
+export function alertMessage(message, scroll = true, type = 'error') {
+  // Remove any existing alert
+  const existing = document.querySelector('.site-alert');
+  if (existing) existing.remove();
+
+  const main = document.querySelector('main') || document.body;
+  const alert = document.createElement('div');
+  alert.className = `site-alert site-alert--${type}`;
+  alert.innerHTML = `<div class="site-alert__inner">${message}<button class="site-alert__close" aria-label="dismiss">×</button></div>`;
+
+  main.insertAdjacentElement('afterbegin', alert);
+
+  const closeBtn = alert.querySelector('.site-alert__close');
+  closeBtn.addEventListener('click', () => alert.remove());
+
+  if (scroll) {
+    alert.scrollIntoView({ behavior: 'smooth' });
+  }
+  return alert;
+}

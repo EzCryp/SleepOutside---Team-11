@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "preview": "vite preview",
+    "dev": "vite",
     "start": "vite",
     "build": "vite build --emptyOutDir",
     "lint": "eslint *.js src/**/*.js",

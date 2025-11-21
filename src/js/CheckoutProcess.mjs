@@ -79,7 +79,7 @@ export default class CheckoutProcess {
   async checkout(form) {
     try {
       console.log("Checkout process started");
-      
+
       // Convert form data to JSON
       const order = formDataToJSON(form);
       console.log("Order from form:", order);
@@ -90,7 +90,7 @@ export default class CheckoutProcess {
       order.tax = this.tax;
       order.shipping = this.shipping;
       order.items = this.packageItems(this.list);
-      
+
       console.log("Final order data:", order);
 
       // Submit to API
@@ -99,12 +99,30 @@ export default class CheckoutProcess {
 
       // Clear the cart after successful order
       setLocalStorage(this.key, []);
-      
+
       return { success: true, order: response };
-      
+
     } catch (error) {
       console.error("Checkout error:", error);
-      return { success: false, error: error.message };
+
+      // If the thrown error includes an object message (from ExternalServices),
+      // stringify it so callers can display a readable message.
+      let errorMessage = "An unknown error occurred";
+      if (error) {
+        if (typeof error.message === 'object') {
+          try {
+            errorMessage = JSON.stringify(error.message);
+          } catch (e) {
+            errorMessage = String(error.message);
+          }
+        } else if (typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else {
+          errorMessage = String(error);
+        }
+      }
+
+      return { success: false, error: errorMessage };
     }
   }
 }
