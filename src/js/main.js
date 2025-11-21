@@ -1,8 +1,15 @@
 import { loadHeaderFooter, renderListWithTemplate } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 
-// Simple, one-time initialization
-document.addEventListener('DOMContentLoaded', initHomepage);
+// Global idempotent guard to prevent the app from initializing twice
+// (Netlify preview tooling can sometimes inject scripts or cause duplicate execution).
+if (window.__SleepOutside_initialized) {
+  console.debug('SleepOutside already initialized — skipping duplicate bootstrap');
+} else {
+  window.__SleepOutside_initialized = true;
+  // Simple, one-time initialization
+  document.addEventListener('DOMContentLoaded', initHomepage);
+}
 
 async function initHomepage() {
   // Prevent multiple calls
