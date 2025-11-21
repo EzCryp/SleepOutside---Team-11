@@ -110,6 +110,8 @@ function cartItemTemplate(item) {
   <p class="cart-card__price">$${item.FinalPrice || 0}</p>
   <button class="cart-card__remove" data-id="${item.Id}">✕ Remove</button>
 </li>`;
+  return newItem;
+}
 
 function attachCartListeners() {
   document.querySelectorAll(".remove-item").forEach((btn) => {
