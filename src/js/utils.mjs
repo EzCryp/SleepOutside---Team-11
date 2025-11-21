@@ -70,8 +70,18 @@ export async function loadHeaderFooter() {
 async function loadHeaderFooterInternal() {
   try {
     console.log('Loading header and footer...');
-    const headerTemplate = await loadTemplate("./partials/header.html");
-    const footerTemplate = await loadTemplate("./partials/footer.html");
+    
+    // Determine correct paths based on current location
+    const isInSubfolder = window.location.pathname.includes('/product_listing/') || 
+                         window.location.pathname.includes('/cart/') || 
+                         window.location.pathname.includes('/checkout/') ||
+                         window.location.pathname.includes('/product_pages/');
+    
+    const headerPath = isInSubfolder ? "../partials/header.html" : "./partials/header.html";
+    const footerPath = isInSubfolder ? "../partials/footer.html" : "./partials/footer.html";
+    
+    const headerTemplate = await loadTemplate(headerPath);
+    const footerTemplate = await loadTemplate(footerPath);
 
     const headerElement = document.querySelector("#main-header");
     const footerElement = document.querySelector("#main-footer");

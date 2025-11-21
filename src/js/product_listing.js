@@ -9,6 +9,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   listingInitialized = true;
   
   try {
+    // Clear any existing content first to prevent duplication
+    const mainElement = document.querySelector("main");
+    if (mainElement) {
+      // Only keep the products section, remove any other content
+      const productsSection = mainElement.querySelector(".products");
+      if (productsSection) {
+        mainElement.innerHTML = "";
+        mainElement.appendChild(productsSection);
+      }
+    }
+    
     // Load header and footer first, then initialize the page
     await loadHeaderFooter();
     

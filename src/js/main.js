@@ -30,12 +30,23 @@ async function loadFeaturedProducts() {
     }
     
     productListElement.innerHTML = '';
-    // Use the API instead of local JSON files
-    const dataSource = new ExternalServices();
-    const products = await dataSource.getData('tents');
+    // Try API first, fall back to local JSON
+    let products;
+    try {
+      const dataSource = new ExternalServices();
+      products = await dataSource.getData('tents');
+    } catch (error) {
+      console.warn('API failed, using local JSON:', error);
+      // Direct fallback to local JSON
+      const response = await fetch('./json/tents.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      products = await response.json();
+    }
     
-    // Filter to only show products we have detail pages for
-    const featuredProductIds = ['880RR', '985RF', '985PR', '344YJ'];
+    // Filter to only show products we have detail pages for - matching reference design
+    const featuredProductIds = ['985PR', '880RT', '880RR', '344YJ'];
     const featuredProducts = products.filter(product => 
       featuredProductIds.includes(product.Id)
     );
@@ -48,26 +59,10 @@ async function loadFeaturedProducts() {
     renderFeaturedProducts(sortedProducts);
   } catch (error) {
     console.error('Error loading featured products:', error);
-    // Fallback to local JSON if API fails
-    try {
-      const response = await fetch('./json/tents.json');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const products = await response.json();
-      
-      const featuredProductIds = ['880RR', '985RF', '985PR', '344YJ'];
-      const featuredProducts = products.filter(product => 
-        featuredProductIds.includes(product.Id)
-      );
-      
-      const sortedProducts = featuredProductIds.map(id => 
-        featuredProducts.find(product => product.Id === id)
-      ).filter(product => product !== undefined);
-      
-      renderFeaturedProducts(sortedProducts);
-    } catch (fallbackError) {
-      console.error('Both API and fallback failed:', fallbackError);
+    // Show error message to user
+    const productList = document.querySelector('.product-list');
+    if (productList) {
+      productList.innerHTML = '<li>Error loading products. Please try again later.</li>';
     }
   }
 }

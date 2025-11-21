@@ -1,28 +1,16 @@
 import { renderListWithTemplate } from "./utils.mjs";
 
-// Get discount information for a product
-function getDiscountInfo(product) {
-  const isDiscounted = product.FinalPrice < product.SuggestedRetailPrice;
-  const discountPercent = isDiscounted
-    ? Math.round(((product.SuggestedRetailPrice - product.FinalPrice) / product.SuggestedRetailPrice) * 100)
-    : 0;
-  return { isDiscounted, discountPercent };
-}
-
 function productCardTemplate(product) {
-  const { isDiscounted, discountPercent } = getDiscountInfo(product);
   return `
     <li class="product-card">
-      <a href="./product_pages/index.html?product=${product.Id}">
+      <a href="../product_pages/index.html?product=${product.Id}">
         <div class="product-card__image-wrapper">
-          <img src="${product.Images?.PrimaryMedium}" alt="${product.Name}">
-          ${isDiscounted ? `<span class="discount-badge">${discountPercent}% OFF</span>` : ""}
+          <img src="${product.Images?.PrimaryMedium || product.Image}" alt="${product.Name}">
         </div>
-        <h3 class="card__brand">${product.Brand.Name}</h3>
+        <h3 class="card__brand">${product.Brand?.Name || product.Brand}</h3>
         <h2 class="card__name">${product.NameWithoutBrand}</h2>
         <p class="product-card__price">
           $${product.FinalPrice}
-          ${isDiscounted ? `<span class="original-price">$${product.SuggestedRetailPrice}</span>` : ""}
         </p>
       </a>
     </li>
@@ -47,6 +35,7 @@ export default class ProductList {
       let list = [];
 
       console.log('ProductList init - Category:', this.category, 'Search:', searchTerm);
+      console.log('Base URL for API:', window.location.origin);
 
       if (searchTerm) {
         // If search param is present, search using the API
@@ -57,7 +46,31 @@ export default class ProductList {
       } else {
         // Default category-based product list
         console.log('Loading category:', this.category);
-        list = await this.dataSource.getData(this.category);
+        
+        // Try local JSON first for reliability
+        try {
+          console.log('Attempting to load local JSON first...');
+          const response = await fetch(`/json/${this.category}.json`);
+          if (response.ok) {
+            const jsonData = await response.json();
+            // Handle both array format (tents) and object format (backpacks, etc.)
+            list = Array.isArray(jsonData) ? jsonData : (jsonData.Result || []);
+            console.log('Local JSON loaded successfully:', list.length, 'products');
+          } else {
+            throw new Error(`Local JSON fetch failed: ${response.status}`);
+          }
+        } catch (localError) {
+          console.log('Local JSON failed, trying API...', localError);
+          // Fallback to API
+          try {
+            list = await this.dataSource.getData(this.category);
+            console.log('API loaded successfully:', list ? list.length : 0, 'products');
+          } catch (apiError) {
+            console.error('Both local JSON and API failed:', apiError);
+            list = [];
+          }
+        }
+        
         const formattedCategory = this.category
           .split('-')
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
@@ -65,21 +78,7 @@ export default class ProductList {
         document.querySelector(".title").textContent = formattedCategory;
       }
 
-      console.log('API response:', list ? list.length : 0, 'products');
-
-      if (!list || list.length === 0) {
-        console.log('No products found, trying fallback...');
-        // Try fallback to local JSON
-        try {
-          const response = await fetch(`./json/${this.category}.json`);
-          if (response.ok) {
-            list = await response.json();
-            console.log('Fallback JSON loaded:', list.length, 'products');
-          }
-        } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError);
-        }
-      }
+      console.log('Final product list:', list ? list.length : 0, 'products');
 
       this.products = list || [];
 
